@@ -18,3 +18,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+kafka:
+  orders:
+    topic-name: "new_orders"

@@ -13,4 +13,14 @@ public record OrderResponseDto(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
+    public static OrderResponseDto toDto(Order order) {
+        return new OrderResponseDto(
+                order.getId(),
+                order.getProduct(),
+                order.getQuantity(),
+                order.getOrderStatus(),
+                order.getCreatedAt(),
+                order.getUpdatedAt()
+        );
+    }
 }

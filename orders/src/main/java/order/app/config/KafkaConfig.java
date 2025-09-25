@@ -35,7 +35,7 @@ public class KafkaConfig {
     @Bean
     public NewTopic newOrders() {
         return TopicBuilder
-                .name("new_orders")
+                .name("${kafka.orders.topic-name}")
                 .partitions(3)
                 .replicas(1)
                 .build();
