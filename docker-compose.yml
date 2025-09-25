@@ -1,0 +1,64 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=store_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d store_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  kafka:
+    image: bitnami/kafka:latest
+    environment:
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    ports:
+      - '9092:9092'
+
+    volumes:
+      - kafka_data:/bitnami/kafka
+
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  kafka-init-topics:
+    image: bitnami/kafka:latest
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: [ "/bin/sh", "-lc" ]
+    command: |
+      set -e
+      BOOT=kafka:9092
+
+      echo "Waiting for Kafka at $$BOOT ..."
+      until /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server "$$BOOT" --list >/dev/null 2>&1; do
+        sleep 2
+      done
+
+      echo 'Creating kafka topics'
+      /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server "$$BOOT" \
+        --create --if-not-exists --topic new_orders --replication-factor 1 --partitions 3
+
+volumes:
+  postgres_data:
+  kafka_data:
