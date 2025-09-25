@@ -6,6 +6,10 @@ spring:
     name: orders
   kafka:
     bootstrap-servers: localhost:9092
+    producer:
+      transactional-id-prefix: tx-order-producer-
+      properties:
+        enable.idempotence: true
 
   datasource:
     url: jdbc:postgresql://localhost:5432/store_db
