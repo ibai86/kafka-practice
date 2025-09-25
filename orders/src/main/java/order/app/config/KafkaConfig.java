@@ -4,6 +4,7 @@ import order.app.dto.OrderResponseDto;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
@@ -18,10 +19,16 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
+    @Value("${kafka.orders.topic-name}")
+    private String topicName;
+
+    @Value(value = "${spring.kafka.bootstrap-servers}")
+    private String bootstrapServers;
+
     @Bean
     public ProducerFactory<String, OrderResponseDto> producerFactory() {
         Map<String, Object> config = new HashMap<>();
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "${spring.kafka.bootstrapServers}");
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         config.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "${spring.kafka.producer.transactional-id-prefix}");
@@ -36,7 +43,7 @@ public class KafkaConfig {
     @Bean
     public NewTopic newOrders() {
         return TopicBuilder
-                .name("${kafka.orders.topic-name}")
+                .name(topicName)
                 .partitions(3)
                 .replicas(1)
                 .build();

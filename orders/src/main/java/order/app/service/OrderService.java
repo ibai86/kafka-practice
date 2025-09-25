@@ -25,7 +25,7 @@ public class OrderService {
                 .orderStatus(Order.OrderStatus.CREATED)
                 .build();
 
-        Order savedOrder = repository.save(newOrder);
+        Order savedOrder = repository.saveAndFlush(newOrder);
         log.info("New order #{} successfully created", savedOrder.getId());
 
         OrderResponseDto newOrderDto = OrderResponseDto.toDto(savedOrder);
