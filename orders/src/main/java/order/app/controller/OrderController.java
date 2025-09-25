@@ -1,5 +1,6 @@
 package order.app.controller;
 
+import lombok.RequiredArgsConstructor;
 import order.app.dto.OrderRequestDto;
 import order.app.dto.OrderResponseDto;
 import order.app.model.Order;
@@ -13,28 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/orders")
+@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
-
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto dto,
-                                                        @RequestParam Long customerId) {
+                                                        @RequestParam("customerId") Long customerId) {
 
         Order order = orderService.create(dto, customerId);
         return ResponseEntity.ok(OrderResponseDto.toDto(order));
     }
-
-//    @PutMapping("/{id}/status")
-//    public ResponseEntity<Order> updateOrderStatus(@PathVariable Long id, @RequestBody String status) {
-//        Order updatedOrder = orderService.updateOrderStatus(id, status);
-//        if (updatedOrder != null) {
-//            return ResponseEntity.ok(updatedOrder);
-//        }
-//        return ResponseEntity.notFound().build();
-//    }
 }
