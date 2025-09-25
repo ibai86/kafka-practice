@@ -1,6 +1,6 @@
-package order.service.config;
+package order.app.config;
 
-import order.service.dto.OrderDto;
+import order.app.dto.OrderResponseDto;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -19,7 +19,7 @@ import java.util.Map;
 public class KafkaConfig {
 
     @Bean
-    public ProducerFactory<String, OrderDto> producerFactory() {
+    public ProducerFactory<String, OrderResponseDto> producerFactory() {
         Map<String, Object> config = new HashMap<>();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "${spring.kafka.bootstrapServers}");
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -28,7 +28,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, OrderDto> kafkaTemplate() {
+    public KafkaTemplate<String, OrderResponseDto> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
