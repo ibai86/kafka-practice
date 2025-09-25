@@ -2,11 +2,13 @@ package order.app.controller;
 
 import order.app.dto.OrderRequestDto;
 import order.app.dto.OrderResponseDto;
+import order.app.model.Order;
 import order.app.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -20,8 +22,11 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto dto) {
-        return ResponseEntity.ok(orderService.createOrder(dto));
+    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto dto,
+                                                        @RequestParam Long customerId) {
+
+        Order order = orderService.create(dto, customerId);
+        return ResponseEntity.ok(OrderResponseDto.toDto(order));
     }
 
 //    @PutMapping("/{id}/status")
