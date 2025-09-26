@@ -1,6 +1,8 @@
 package com.store.payment.config;
 
 import com.store.payment.dto.OrderEvent;
+import com.store.payment.exception.OrderPaymentException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -26,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
+@Slf4j
 public class KafkaConfig {
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
@@ -56,16 +59,28 @@ public class KafkaConfig {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, OrderEvent> kafkaListenerContainerFactory(
-            ConsumerFactory<String, OrderEvent> consumerFactory) {
+            ConsumerFactory<String, OrderEvent> consumerFactory, DefaultErrorHandler errorHandler) {
         ConcurrentKafkaListenerContainerFactory<String, OrderEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
 
         factory.setConsumerFactory(consumerFactory);
+        factory.setCommonErrorHandler(errorHandler);
+
+        return factory;
+    }
+
+    @Bean
+    public DefaultErrorHandler errorHandler() {
         FixedBackOff fixedBackOff = new FixedBackOff(1000L, 5);
 
-        DefaultErrorHandler errorHandler = new DefaultErrorHandler(fixedBackOff);
+        DefaultErrorHandler errorHandler = new DefaultErrorHandler(
+                (consumerRecord, ex) -> {
+                    log.error("Failure to send message to topic {} cause of {}",
+                            consumerRecord.topic(), ex.getMessage());
+                },
+                fixedBackOff);
 
-        factory.setCommonErrorHandler(errorHandler);
-        return factory;
+        errorHandler.addNotRetryableExceptions(OrderPaymentException.class);
+        return errorHandler;
     }
 
     @Bean
