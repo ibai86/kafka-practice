@@ -1,0 +1,28 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: payment
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      transactional-id-prefix: tx-payment-producer-
+      properties:
+        enable.idempotence: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/store_db
+    username: user
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+kafka:
+  payment:
+    topic-name: "payed_orders"
