@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -39,5 +40,16 @@ public class OrderService {
         orderProducerService.sendOrderEvent(savedOrder, customerId);
 
         return savedOrder;
+    }
+
+    @Transactional
+    public Order updateOrderStatus(UUID orderId, Order.OrderStatus newStatus) {
+        return repository.findById(orderId)
+                .map(order -> {
+                    order.setOrderStatus(newStatus);
+                    log.info("Order #{} changed status to {}", orderId, newStatus);
+                    return repository.save(order);
+                })
+                .orElseThrow(() -> new NoSuchElementException("Order not found"));
     }
 }

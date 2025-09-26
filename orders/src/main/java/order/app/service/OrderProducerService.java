@@ -21,7 +21,7 @@ public class OrderProducerService {
     public void sendOrderEvent(Order order, Long customerId) {
         OrderEvent message = new OrderEvent(order.getId(), customerId, order.getProduct(), order.getQuantity());
 
-        kafkaTemplate.send(topicName, String.valueOf(order.getId()), message);
-        log.info("New order #{} awaiting payment", order.getId());
+        kafkaTemplate.send(topicName, String.valueOf(message.orderId()), message);
+        log.info("New order #{} awaiting payment", message.orderId());
     }
 }
