@@ -26,3 +26,7 @@ spring:
 kafka:
   payment:
     topic-name: "payed_orders"
+
+order-service:
+  host: localhost
+  port: 8081
