@@ -36,7 +36,7 @@ public class OrderService {
         Order savedOrder = repository.save(newOrder);
         log.info("New order #{} successfully created", savedOrder.getId());
 
-        orderProducerService.sendOrderEvent(savedOrder.getId(), customerId);
+        orderProducerService.sendOrderEvent(savedOrder, customerId);
 
         return savedOrder;
     }
