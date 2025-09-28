@@ -12,7 +12,7 @@ import java.util.UUID;
 @FeignClient(name = "order-service", url = "${order-service.host}:${order-service.port}")
 public interface OrderServiceClient {
 
-    @PutMapping("/{id}/status")
+    @PutMapping("api/orders/{id}/status")
     OrderResponseDto updateOrderStatus(@PathVariable("id") UUID orderId,
                                        @RequestParam("newStatus") OrderStatus newStatus);
 }

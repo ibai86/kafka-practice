@@ -12,13 +12,14 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class KafkaConsumerListener {
 
-    private final PaymentService paymentService;
+    private final ProcessingService processingService;
 
-    @KafkaListener(topics = "${kafka.payment.topic-name}", groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = "${kafka.orders.topic-name}", groupId = "${spring.kafka.consumer.group-id}")
     public void listenOrderEvent(OrderEvent dto) {
         if (dto == null) {
             throw new OrderPaymentException("OrderEvent message is empty");
         }
 
+        processingService.processCreatedOrder(dto);
     }
 }
