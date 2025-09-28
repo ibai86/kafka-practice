@@ -1,4 +1,12 @@
 package com.store.payment.dto;
 
-public record OrderPaymentEvent() {
+import java.util.UUID;
+
+public record OrderPaymentEvent(
+        UUID orderId,
+        Long customerId,
+        String product,
+        int quantity,
+        OrderStatus status
+) {
 }

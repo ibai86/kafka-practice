@@ -10,6 +10,8 @@ spring:
       transactional-id-prefix: tx-payment-producer-
       properties:
         enable.idempotence: true
+    consumer:
+      group-id: payment-group
 
   datasource:
     url: jdbc:postgresql://localhost:5432/store_db
@@ -26,6 +28,8 @@ spring:
 kafka:
   payment:
     topic-name: "payed_orders"
+  orders:
+    topic-name: "new_orders"
 
 order-service:
   host: localhost
