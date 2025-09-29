@@ -33,13 +33,6 @@ services:
     volumes:
       - kafka_data:/bitnami/kafka
 
-    healthcheck:
-      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
-
 volumes:
   postgres_data:
   kafka_data:
