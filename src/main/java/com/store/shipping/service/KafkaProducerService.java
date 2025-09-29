@@ -15,7 +15,7 @@ public class KafkaProducerService {
 
     private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
 
-    public void sendOrderPayment(OrderEvent message) {
+    public void sendOrderShipping(OrderEvent message) {
 
         kafkaTemplate.send(topicName, String.valueOf(message.orderId()), message);
     }
