@@ -19,6 +19,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.transaction.KafkaTransactionManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,12 +53,20 @@ public class KafkaConfig {
     }
 
     @Bean
+    public KafkaTransactionManager<String, OrderEvent> kafkaTransactionManager(
+            ProducerFactory<String, OrderEvent> producerFactory) {
+        return new KafkaTransactionManager<>(producerFactory);
+    }
+
+    @Bean
     public ConcurrentKafkaListenerContainerFactory<String, OrderEvent> kafkaListenerContainerFactory(
             ConsumerFactory<String, OrderEvent> consumerFactory) {
 
         ConcurrentKafkaListenerContainerFactory<String, OrderEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
 
         factory.setConsumerFactory(consumerFactory);
+
+        factory.getContainerProperties().setKafkaAwareTransactionManager(kafkaTransactionManager(producerFactory()));
 
         return factory;
     }
