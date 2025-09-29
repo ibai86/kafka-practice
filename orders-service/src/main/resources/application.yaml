@@ -1,0 +1,28 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: orders
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      transactional-id-prefix: tx-order-producer-
+      properties:
+        enable.idempotence: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/store_db
+    username: user
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+kafka:
+  orders:
+    topic-name: "new_orders"
