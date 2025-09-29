@@ -22,6 +22,7 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.transaction.KafkaTransactionManager;
 import org.springframework.util.backoff.FixedBackOff;
 
 import java.util.HashMap;
@@ -58,12 +59,20 @@ public class KafkaConfig {
     }
 
     @Bean
+    public KafkaTransactionManager<String, OrderEvent> kafkaTransactionManager(
+            ProducerFactory<String, OrderEvent> producerFactory) {
+        return new KafkaTransactionManager<>(producerFactory);
+    }
+
+    @Bean
     public ConcurrentKafkaListenerContainerFactory<String, OrderEvent> kafkaListenerContainerFactory(
             ConsumerFactory<String, OrderEvent> consumerFactory, DefaultErrorHandler errorHandler) {
         ConcurrentKafkaListenerContainerFactory<String, OrderEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
 
         factory.setConsumerFactory(consumerFactory);
         factory.setCommonErrorHandler(errorHandler);
+
+        factory.getContainerProperties().setKafkaAwareTransactionManager(kafkaTransactionManager(producerFactory()));
 
         return factory;
     }
@@ -74,7 +83,7 @@ public class KafkaConfig {
 
         DefaultErrorHandler errorHandler = new DefaultErrorHandler(
                 (consumerRecord, ex) -> {
-                    log.error("Failure to send message to topic {} cause of {}",
+                    log.error("Failure to read message from topic {} cause of {}",
                             consumerRecord.topic(), ex.getMessage());
                 },
                 fixedBackOff);

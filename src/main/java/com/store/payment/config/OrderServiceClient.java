@@ -1,6 +1,5 @@
 package com.store.payment.config;
 
-import com.store.payment.dto.OrderResponseDto;
 import com.store.payment.dto.OrderStatus;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +12,5 @@ import java.util.UUID;
 public interface OrderServiceClient {
 
     @PutMapping("api/orders/{id}/status")
-    OrderResponseDto updateOrderStatus(@PathVariable("id") UUID orderId,
-                                       @RequestParam("newStatus") OrderStatus newStatus);
+    void updateOrderStatus(@PathVariable("id") UUID orderId, @RequestParam("newStatus") OrderStatus newStatus);
 }
