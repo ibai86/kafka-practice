@@ -1,0 +1,14 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: notifications
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: notifications-group
+
+kafka:
+  shipping:
+    topic-name: "sent_orders"
