@@ -1,0 +1,24 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: payment
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      transactional-id-prefix: tx-payment-producer-
+      properties:
+        enable.idempotence: true
+    consumer:
+      group-id: payment-group
+
+kafka:
+  payment:
+    topic-name: "payed_orders"
+  orders:
+    topic-name: "new_orders"
+
+order-service:
+  host: localhost
+  port: 8081
