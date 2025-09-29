@@ -1,0 +1,36 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: shipping
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      transactional-id-prefix: tx-shipping-producer-
+      properties:
+        enable.idempotence: true
+    consumer:
+      group-id: shipping-group
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/store_db
+    username: user
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+kafka:
+  payment:
+    topic-name: "payed_orders"
+  shipping:
+    topic-name: "sent_orders"
+
+order-service:
+  host: localhost
+  port: 8081
